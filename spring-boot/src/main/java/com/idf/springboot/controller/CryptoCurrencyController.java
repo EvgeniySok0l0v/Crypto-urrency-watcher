@@ -1,7 +1,6 @@
 package com.idf.springboot.controller;
 
 import com.idf.springboot.entity.Coin;
-import com.idf.springboot.entity.UserCoin;
 import com.idf.springboot.request.NotifyRequest;
 import com.idf.springboot.service.CoinService;
 import com.idf.springboot.service.UserCoinService;
@@ -62,8 +61,7 @@ public class CryptoCurrencyController {
      */
     @PostMapping("/notify")
     public void notify(@RequestBody NotifyRequest request){
-        UserCoin userCoin = userCoinService.createUserCoin(request);
-        userCoinService.save(userCoin);
+        userCoinService.save(request);
     }
 
 

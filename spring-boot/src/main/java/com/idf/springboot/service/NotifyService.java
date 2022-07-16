@@ -63,24 +63,28 @@ public class NotifyService {
     private void updateExistCoins(){
         List<Coin> coinsFromDb = (List<Coin>) coinRepo.findAll();
         String ids = getIds(coinsFromDb);
-        CoinDto[] coinDtos = restTemplate.getForObject(URL + ids, CoinDto[].class);
-        assert coinDtos != null;
-        List<CoinDto> coinDtoList = Arrays.stream(coinDtos).collect(Collectors.toList());
+        try {
+            CoinDto[] coinDtos = restTemplate.getForObject(URL + ids, CoinDto[].class);
+            assert coinDtos != null;
+            List<CoinDto> coinDtoList = Arrays.stream(coinDtos).collect(Collectors.toList());
 
-        List<Coin> coinList = new ArrayList<>();
+            List<Coin> coinList = new ArrayList<>();
 
-        for (CoinDto coinDto : coinDtoList){
-            Coin coin = new Coin(
-                    Long.valueOf(coinDto.getId()),
-                    coinDto.getSymbol(),
-                    Double.valueOf(coinDto.getPrice_usd()));
+            for (CoinDto coinDto : coinDtoList){
+                Coin coin = new Coin(
+                        Long.valueOf(coinDto.getId()),
+                        coinDto.getSymbol(),
+                        Double.valueOf(coinDto.getPrice_usd()));
 
-            coinList.add(coin);
+                coinList.add(coin);
+            }
+            coinRepo.saveAll(coinList);
+            LOGGER.info("Info updated");
+
+            checkPrice();
+        } catch (Exception exception){
+            LOGGER.error("Server error, something wrong with CoinLore.");
         }
-        coinRepo.saveAll(coinList);
-        LOGGER.info("Info updated");
-
-        checkPrice();
     }
 
     /**
